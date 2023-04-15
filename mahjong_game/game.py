@@ -38,17 +38,16 @@ class Game:
             if rounds == 10:
                 break
             last_played_stone = self.discarded_stones[-1] if self.discarded_stones else None
-            self.current_player = self.pick_decision(self.players_decide(last_played_stone))
-
+            self.current_player = self.pick_decision(self.players_decide(last_played_stone))  # None oder Chi etc
             if self.current_player:
                 self.tick(last_played_stone)
                 self.players.skip(self.current_player)
-                continue
-
-            self.current_player = self.players.next()
-            self.tick()
-
+            else:
+                self.current_player = self.players.next()
+                self.tick()
+            rounds += 1
             print(rounds, self.current_player)
+        print('Game over')
 
     def players_decide(self, last_played_stone):
         if not last_played_stone:
@@ -61,9 +60,28 @@ class Game:
     def pick_decision(self, decisions):
         if not decisions:
             return None
-        return None  # TODO: check for pongs etc
+
+        highest_player = None
+        highest_streak = None
+        next_player = self.players.next()
+        self.players.skip(self.current_player)
+
+        for player, streak in decisions:
+            if streak == "won":
+                highest_player = player
+                break
+            elif streak == "chi" and not highest_streak and next_player == player:
+                highest_player = player
+                highest_streak = streak
+            elif streak == "pong":
+                highest_player = player
+                highest_streak = streak
+            elif streak == "kong":
+                highest_player = player
+                highest_streak = streak
+        return highest_player
 
 
 if __name__ == '__main__':
     game = Game(["Albert Einstein", "Terminator", "ReadyPlayerOne", "Bob der Barrister"])
-    game.play_game()
+    game.play_game(30)
