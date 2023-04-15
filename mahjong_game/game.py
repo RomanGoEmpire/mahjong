@@ -1,6 +1,6 @@
-from deck import Deck
-from player import Player
-from player_queue import PlayerQueue
+from mahjong_game.deck import Deck
+from mahjong_game.player import Player
+from mahjong_game.player_queue import PlayerQueue
 
 
 class Game:
@@ -31,11 +31,10 @@ class Game:
         self.discarded_stones.append(discarded_stone)
         return self
 
-    def play_game(self):
+    def play_game(self, rounds_to_play=None):
         rounds = 0
         while self.deck and not self.won():
-            rounds += 1
-            if rounds == 10:
+            if rounds == rounds_to_play:
                 break
             last_played_stone = self.discarded_stones[-1] if self.discarded_stones else None
             self.current_player = self.pick_decision(self.players_decide(last_played_stone))  # None oder Chi etc

@@ -27,3 +27,6 @@ class PlayerQueue:
     def __iter__(self):
         for player in self.queue:
             yield player
+
+    def __getitem__(self, index):
+        return self.queue[index]
