@@ -1,3 +1,6 @@
+import random
+
+from mahjong_game.hand_checker import HandChecker
 from mahjong_game.stone import Stone
 
 
@@ -5,46 +8,58 @@ class Player:
 
     def __init__(self, name, hand):
         self.name = name
-        self.hand = hand
+        self.concealed_hand = hand
+        self.melded_hand = []
 
     def sort_hand(self):
-        self.hand.sort()
+        self.concealed_hand.sort()
 
-    def play(self, stone):
-        self.hand += [stone]
-        self.sort_hand()
+    def play(self, stone, other=None):
+        print(self.name)
+        print(f"took {stone}")
+
+        if other:
+            melded_stones = [stone] + list(other)
+            melded_stones.sort()
+            self.melded_hand += [melded_stones]
+            for concealed_stone in other:
+                self.concealed_hand.remove(concealed_stone)
+        else:
+            self.concealed_hand += [stone]
+            self.sort_hand()
+
         if self.hu():
             return None
+
         index = self.decide()
         discard_stone = self.discard_stone(index)
+        print(self.concealed_hand,len(self.concealed_hand))
+        print(self.melded_hand,len(self.melded_hand))
+        print(f"discarded {discard_stone}")
         return discard_stone
 
     def decide(self):
-        return 0  # TODO: index
+        return random.randint(0, len(self.concealed_hand) - 1)  # TODO: index
 
     def discard_stone(self, index):
-        return self.hand.pop(index)
+        return self.concealed_hand.pop(index)
 
     def decide_to_play(self, stone):
-        if self.is_winning_tile(stone):  # winning stone has to be added to hand to check new hand will win
+        possible_hand = self.concealed_hand + self.melded_hand + [stone]
+        if HandChecker().is_winning_hand(possible_hand):
             return self, 'won'
         options = self.get_options(stone)
         if options:
-            print(options[0])
             # TODO: add player logic do decide what to take
-            return self, options[0][0]
+            return self, options[0]  # currently selects the first decision
         # return an option
         return self, None
 
-    def is_winning_tile(self, stone):
-        # add stone to copy of hand and check if it passes the winning format
-        return True
-
     def get_options(self, stone):
         options = []
-        if self.hand.count(stone) == 3:
+        if self.concealed_hand.count(stone) == 3:
             options += [('kong', (stone, stone, stone))]
-        elif self.hand.count(stone) == 2:
+        elif self.concealed_hand.count(stone) == 2:
             options += [('pong', (stone, stone))]
 
         if stone.rang >= 30:
@@ -69,19 +84,19 @@ class Player:
         return options
 
     def contains(self, stone):
-        return self.hand.count(stone) != 0
+        return self.concealed_hand.count(stone) != 0
 
     def __str__(self):
-        return f"{self.name}: {self.hand}"
+        return f"{self.name}: {self.concealed_hand}"
 
     def hu(self):
         # TODO: Hand checker class has to check if hand has won
 
-        return len(self.hand) == 14
+        return False
 
     def __eq__(self, other):
         same_name = self.name == other.name
-        same_hand = self.hand == other.hand
+        same_hand = self.concealed_hand == other.concealed_hand
         return same_name and same_hand
 
     def __repr__(self):
