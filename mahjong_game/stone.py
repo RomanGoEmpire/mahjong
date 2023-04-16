@@ -28,3 +28,8 @@ class Stone:
 
     def __le__(self, other):
         return self.rang <= other.rang
+
+    def __sub__(self, other):
+        if isinstance(other, int):
+            return Stone(self.value - other, self.suite)
+        raise TypeError(f"cannot subtract type {type(other)} from stone ({self})")

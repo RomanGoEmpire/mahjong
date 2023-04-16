@@ -48,3 +48,15 @@ class HandChecker:
 
     def is_pong(self, triple):
         return triple.count(triple[0]) == 3
+
+    def is_chi(self, triple):
+        first, second, third = triple
+        return first == second - 1 == third - 2
+
+    def contains(self, stones: list, concealed_hand):
+        hand_copy = concealed_hand.copy()
+        for stone in stones:
+            if not (stone in hand_copy):
+                return False
+            hand_copy.pop(hand_copy.index(stone))
+        return True
