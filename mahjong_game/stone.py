@@ -5,6 +5,7 @@ class Stone:
         self.suite = suite
         rang = ["Dots", "Bamboo", "Character", "Green", "Red", "White", "East", "South", "West", "North"]
         self.rang = rang.index(suite) * 10 + value
+        self.is_honor = self.suite in ["Green", "Red", "White", "East", "South", "West", "North"]
 
     def __eq__(self, other):
         if not isinstance(other, Stone):

@@ -18,14 +18,10 @@ class Game:
             players.append(Player(name, self.deck.generate_hand()))
         return players
 
-    def play_game(self, rounds_to_play=None):
-        rounds = 0
-
+    def play_game(self):
         while self.deck and not self.won():
-            if rounds == rounds_to_play:
-                break
             last_played_stone = self.discarded_stones[-1] if self.discarded_stones else None
-
+            print(f"{self.current_player}\ndiscarded {last_played_stone}")
             all_decisions = self.players_decide(last_played_stone)
             selected_player_and_decision = self.pick_decision(all_decisions)  # <Player><Decision
 
@@ -37,8 +33,12 @@ class Game:
             else:
                 self.current_player = self.players.next()
                 self.tick()
-            rounds += 1
-        print('Game over')
+        if self.won():
+            print("\nPlayer won\n")
+        else:
+            print("\nNo more cards left\n")
+        for players in self.players:
+            print(players)
 
     def tick(self, stone=None, decision=None):
         if stone:
@@ -93,4 +93,4 @@ class Game:
 
 if __name__ == '__main__':
     game = Game(["Albert Einstein", "Terminator", "ReadyPlayerOne", "Bob der Barrister"])
-    game.play_game(50)
+    game.play_game()

@@ -1,5 +1,3 @@
-import random
-
 from mahjong_game.hand_checker import HandChecker
 from mahjong_game.stone import Stone
 
@@ -10,14 +8,13 @@ class Player:
         self.name = name
         self.concealed_hand = hand
         self.melded_hand = []
+        self.sort_hand()
+        self.hand_checker = HandChecker(self.concealed_hand)
 
     def sort_hand(self):
         self.concealed_hand.sort()
 
     def play(self, stone, other=None):
-        print(self.name)
-        print(f"took {stone}")
-
         if other:
             melded_stones = [stone] + list(other)
             melded_stones.sort()
@@ -33,20 +30,20 @@ class Player:
 
         index = self.decide()
         discard_stone = self.discard_stone(index)
-        print(self.concealed_hand,len(self.concealed_hand))
-        print(self.melded_hand,len(self.melded_hand))
-        print(f"discarded {discard_stone}")
         return discard_stone
 
+    def hu(self):
+        return self.hand_checker.is_winning_hand()
+
     def decide(self):
-        return random.randint(0, len(self.concealed_hand) - 1)  # TODO: index
+        return 0  # TODO: Add player logic to decide what to discard
+        # return random.randint(0, len(self.concealed_hand) - 1)
 
     def discard_stone(self, index):
         return self.concealed_hand.pop(index)
 
     def decide_to_play(self, stone):
-        possible_hand = self.concealed_hand + self.melded_hand + [stone]
-        if HandChecker().is_winning_hand(possible_hand):
+        if self.hand_checker.is_winning_hand(self.concealed_hand + [stone]):
             return self, 'won'
         options = self.get_options(stone)
         if options:
@@ -87,12 +84,9 @@ class Player:
         return self.concealed_hand.count(stone) != 0
 
     def __str__(self):
-        return f"{self.name}: {self.concealed_hand}"
-
-    def hu(self):
-        # TODO: Hand checker class has to check if hand has won
-
-        return False
+        return f"{self.name}:\n" \
+               f"concealed: {self.concealed_hand}\n" \
+               f"melded : {self.melded_hand}"
 
     def __eq__(self, other):
         same_name = self.name == other.name
