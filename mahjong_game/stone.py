@@ -5,14 +5,14 @@ class Stone:
         self.suite = suite
         rang = ["Dots", "Bamboo", "Character", "Green", "Red", "White", "East", "South", "West", "North"]
         self.rang = rang.index(suite) * 10 + value
-        self.is_honor = self.suite in ["Green", "Red", "White", "East", "South", "West", "North"]
+        self.is_dragon = self.suite in ["Green", "Red", "White"]
+        self.is_wind = self.suite in ["East", "South", "West", "North"]
+        self.is_terminal = value == 1 or value == 9
 
     def __eq__(self, other):
         if not isinstance(other, Stone):
             return False
-        same_value = other.value == self.value
-        same_suite = other.suite == self.suite
-        return same_value and same_suite
+        return self.rang == other.rang
 
     def __repr__(self):
         return f"{self.value}_{self.suite}" if self.value != 0 else f"{self.suite}"

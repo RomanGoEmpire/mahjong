@@ -14,12 +14,12 @@ class Player:
     def sort_hand(self):
         self.concealed_hand.sort()
 
-    def play(self, stone, other=None):
-        if other:
-            melded_stones = [stone] + list(other)
+    def play(self, stone, conceiled_to_melded=None):
+        if conceiled_to_melded:
+            melded_stones = [stone] + list(conceiled_to_melded)
             melded_stones.sort()
             self.melded_hand += [melded_stones]
-            for concealed_stone in other:
+            for concealed_stone in conceiled_to_melded:
                 self.concealed_hand.remove(concealed_stone)
         else:
             self.concealed_hand += [stone]
@@ -52,6 +52,8 @@ class Player:
         # return an option
         return self, None
 
+    # 1 1 2 3   1 [(pong, 111), (chi 123)]
+
     def get_options(self, stone):
         options = []
         if self.concealed_hand.count(stone) == 3:
@@ -69,7 +71,6 @@ class Player:
 
         if not self.contains(stone_minus_1) and not self.contains(stone_plus_1):
             return options
-
         if self.contains(stone_minus_1) and self.contains(stone_minus_2):
             options += [('chi', (stone_minus_2, stone_minus_1))]
 

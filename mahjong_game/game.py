@@ -20,19 +20,26 @@ class Game:
 
     def play_game(self):
         while self.deck and not self.won():
-            last_played_stone = self.discarded_stones[-1] if self.discarded_stones else None
+            last_played_stone = self.discarded_stones.pop() if self.discarded_stones else None
             print(f"{self.current_player}\ndiscarded {last_played_stone}")
+            # Ask all players if they want to take the "last_played_stone"
             all_decisions = self.players_decide(last_played_stone)
-            selected_player_and_decision = self.pick_decision(all_decisions)  # <Player><Decision
+            selected_player_and_decision = self.pick_decision(all_decisions)  # <Player><Decision>
 
             if selected_player_and_decision is not None:
                 self.current_player = selected_player_and_decision[0]
+
                 print(f"{self.current_player.name} took  {last_played_stone} with {selected_player_and_decision[1]}")
+
                 self.tick(last_played_stone, selected_player_and_decision[1][1])
                 self.players.skip(self.current_player)
             else:
+                if last_played_stone:
+                    self.discarded_stones += [last_played_stone]
+                print("discarded: ", self.discarded_stones)
                 self.current_player = self.players.next()
                 self.tick()
+            print("")
         if self.won():
             print("\nPlayer won\n")
         else:
@@ -69,10 +76,12 @@ class Game:
 
         highest_player = None
         highest_streak = None
+
         next_player = self.players.next()
         self.players.skip(self.current_player)
 
         for player, streak in decisions:
+            # streak <- ('chi',(Stone(...),Stone(..))
             if streak is None:
                 continue
             if streak[0] == "won":

@@ -31,12 +31,10 @@ class Deck:
         return hand
 
     def get_stone(self):
-        stone = self.stones[0]
-        self.stones = self.stones[1:]
-        return stone
+        return self.stones.pop()
 
     def is_empty(self):
-        return self.stones
+        return self.stones == []
 
     def __repr__(self):
         return str(self.stones)
